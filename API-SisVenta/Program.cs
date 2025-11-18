@@ -1,11 +1,17 @@
+using API_SisVenta.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddRouting(routing => routing.LowercaseUrls = true);
+
+// 👉 CONFIGURAR DbContext CON SQL SERVER Y CADENA DE CONEXIÓN
+builder.Services.AddDbContext<DBVENTAbakContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexionSql")));
 
 var app = builder.Build();
 
