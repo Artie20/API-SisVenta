@@ -1,8 +1,10 @@
-﻿using API_Cliente.CasosDeUso;
+using API_Cliente.CasosDeUso;
 using API_SisVenta.Dtos;
 using API_SisVenta.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static API_SisVenta.Repositories.DBVENTAbakContext;
+
 
 namespace API_SisVenta.Controllers
 {
@@ -13,9 +15,10 @@ namespace API_SisVenta.Controllers
         private readonly DBVENTAbakContext _DBventabakcontext;
         private readonly IActualizaCasoDeUso _actualizaCasoDeUso;
 
-        public ClienteController(DBVENTAbakContext DBventabakcontext)
+        public ClienteController(DBVENTAbakContext DBventabakcontext, IActualizaCasoDeUso actualizaCasoDeUso)
         {
             _DBventabakcontext = DBventabakcontext;
+            _actualizaCasoDeUso = actualizaCasoDeUso;
         }
 
         [HttpGet()]
@@ -58,9 +61,14 @@ namespace API_SisVenta.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ClienteDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ClienteDto> ActualizaCliente(ClienteDto clientes)
+        public async Task<IActionResult> ActualizaCliente(ClienteDto clientes)
         {
-            throw new NotImplementedException();
+            ClienteDto? result = await _actualizaCasoDeUso.Execute(clientes);
+            if (result == null)
+                return new NotFoundResult();
+            return new OkObjectResult(result);
         }
     }
 }
+
+
