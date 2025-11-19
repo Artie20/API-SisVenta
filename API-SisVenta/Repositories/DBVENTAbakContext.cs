@@ -1,4 +1,4 @@
-﻿using API_SisVenta.Dtos;
+using API_SisVenta.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Diagnostics;
@@ -31,11 +31,10 @@ namespace API_SisVenta.Repositories
             SaveChanges();
             return true;
         }
-        public async Task<ClienteEntity> Add(CreaClienteDto ClienteDto) //Se hace público y asíncrono Trae a Clientes de Entity y se agrega Add en CrearClientesDto clientesDto
+        public async Task<ClienteEntity> Add(CreaClienteDto ClienteDto)
         {
             ClienteEntity entity = new ClienteEntity()
             {
-                
                 nombre = ClienteDto.nombre,
                 correo = ClienteDto.correo,
                 rfc = ClienteDto.rfc,
@@ -44,36 +43,49 @@ namespace API_SisVenta.Repositories
                 esActivo = ClienteDto.esActivo,
                 fechaRegistro = ClienteDto.fechaRegistro
             };
+
             EntityEntry<ClienteEntity> response = await Cliente.AddAsync(entity);
             await SaveChangesAsync();
+
             return await Get(response.Entity.idCliente);
         }
-    }
 
-    public class ClienteEntity
-    {
-        public int idCliente { get; set; }
-        public string nombre { get; set; }
-        public string correo { get; set; }
-        public string rfc { get; set; }
-        public string domicilioFiscalReceptor { get; set; }
-        public string regimenFiscalReceptor { get; set; }
-        public bool? esActivo { get; set; }
-        public DateTime? fechaRegistro { get; set; }
-
-        public ClienteDto ToDto()
+        // ✔️ Método separado y correcto
+        public async Task<bool> Actualizar(ClienteEntity clienteEntity)
         {
-            return new ClienteDto
-            {
-                idCliente = idCliente,
-                nombre = nombre,
-                correo = correo,
-                rfc = rfc,
-                domicilioFiscalReceptor = domicilioFiscalReceptor,
-                regimenFiscalReceptor = regimenFiscalReceptor,
-                esActivo = esActivo,
-                fechaRegistro = fechaRegistro
-            };
+            Cliente.Update(clienteEntity);
+            await SaveChangesAsync();
+            return true;
         }
+
+
+        public class ClienteEntity
+        {
+            public int idCliente { get; set; }
+            public string nombre { get; set; }
+            public string correo { get; set; }
+            public string rfc { get; set; }
+            public string domicilioFiscalReceptor { get; set; }
+            public string regimenFiscalReceptor { get; set; }
+            public bool? esActivo { get; set; }
+            public DateTime? fechaRegistro { get; set; }
+
+            public ClienteDto ToDto()
+            {
+                return new ClienteDto
+                {
+                    idCliente = idCliente,
+                    nombre = nombre,
+                    correo = correo,
+                    rfc = rfc,
+                    domicilioFiscalReceptor = domicilioFiscalReceptor,
+                    regimenFiscalReceptor = regimenFiscalReceptor,
+                    esActivo = esActivo,
+                    fechaRegistro = fechaRegistro
+                };
+            }
+        }
+
+
     }
 }
