@@ -1,25 +1,25 @@
-﻿using API_SisVenta.Dtos;
+using API_SisVenta.Dtos;
 using API_SisVenta.Repositories;
 
 namespace API_Cliente.CasosDeUso
 {
     public interface IActualizaUsuarioCasoDeUso
     {
-        Task<UsuarioDto?> Execute(ActualizarUsuarioDto dto);
+        Task<UsuarioDto?> Execute(UsuarioDto usuario);
     }
 
     public class ActualizaUsuarioCasoDeUso : IActualizaUsuarioCasoDeUso
     {
-        private readonly DBVENTAbakContext _context;
+        private readonly DBVENTAbakContext _DBventabakContext;
 
-        public ActualizaUsuarioCasoDeUso(DBVENTAbakContext context)
+        public ActualizaUsuarioCasoDeUso(DBVENTAbakContext DBventabakContext)
         {
-            _context = context;
+            _DBventabakContext = DBventabakContext;
         }
 
-        public async Task<UsuarioDto?> Execute(ActualizarUsuarioDto dto)
+        public async Task<UsuarioDto?> Execute(UsuarioDto dto)
         {
-            var entity = await _context.GetUsuario(dto.idUsuario);
+            var entity = await _DBventabakContext.GetUsuario(dto.idUsuario);
 
             if (entity == null)
                 return null;
@@ -30,10 +30,12 @@ namespace API_Cliente.CasosDeUso
             entity.idRol = dto.idRol;
             entity.esActivo = dto.esActivo;
 
-            await _context.ActualizarUsuario(entity);
+            await _DBventabakContext.ActualizarUsuario(entity);
 
             return entity.ToDto();
         }
     }
 }
+
+
 
