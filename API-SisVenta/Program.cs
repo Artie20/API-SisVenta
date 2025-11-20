@@ -16,6 +16,8 @@ builder.Services.AddDbContext<DBVENTAbakContext>(options =>
 
 // Casos de uso
 builder.Services.AddScoped<IActualizaCasoDeUso, ActualizaCasoDeUso>();
+builder.Services.AddScoped<IActualizaUsuarioCasoDeUso, ActualizaUsuarioCasoDeUso>();
+/*builder.Services.AddScoped<IActualizaRolCasoDeUso, ActualizaRolCasoDeUso>();*/
 
 var app = builder.Build();
 
