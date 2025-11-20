@@ -1,9 +1,8 @@
-﻿using API_Cliente.CasosDeUso;
+using API_Cliente.CasosDeUso;
 using API_SisVenta.Dtos;
 using API_SisVenta.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static API_SisVenta.Repositories.DBVENTAbakContext;
 
 namespace API_SisVenta.Controllers
 {
@@ -11,76 +10,69 @@ namespace API_SisVenta.Controllers
     [Route("api/[controller]")]
     public class UsuarioController : Controller
     {
-        private readonly DBVENTAbakContext _context;
+        private readonly DBVENTAbakContext _DBventabakcontext;
         private readonly IActualizaUsuarioCasoDeUso _actualizaUsuarioCasoDeUso;
 
-        public UsuarioController(DBVENTAbakContext context, IActualizaUsuarioCasoDeUso actualizaUsuarioCasoDeUso)
+        public UsuarioController(DBVENTAbakContext DBventabakcontext, IActualizaUsuarioCasoDeUso actualizaUsuarioCasoDeUso)
         {
-            _context = context;
+            _DBventabakcontext = DBventabakcontext;
             _actualizaUsuarioCasoDeUso = actualizaUsuarioCasoDeUso;
         }
 
-        // GET: api/usuario
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UsuarioDto>))]
         public IActionResult TraeUsuarios()
         {
-            var result = _context.Usuario
-                                 .Include(u => u.Rol)
-                                 .Select(u => u.ToDto())
-                                 .ToList();
-
-            return new OkObjectResult(result);
+            var result = _DBventabakcontext.Usuario.Include(u => u.Rol)
+                                    .Select(u => u.ToDto())
+                                    .ToList();
+            return Ok(result);
         }
 
-        // GET: api/usuario/5
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UsuarioDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> TraeUsuario(int id)
         {
-            var result = await _context.Usuario
-                                       .Include(u => u.Rol)
-                                       .FirstOrDefaultAsync(u => u.IdUsuario == id);
+            var entity = await _DBventabakcontext.Usuario
+                                  .Include(u => u.Rol)
+                                  .FirstOrDefaultAsync(u => u.idUsuario == id);
 
-            if (result == null)
-                return new NotFoundResult();
+            if (entity == null)
+                return NotFound();
 
-            return new OkObjectResult(result.ToDto());
+            return Ok(entity.ToDto());
         }
 
-        // POST: api/usuario
-        [HttpPost]
+        [HttpPost()]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UsuarioDto))]
-        public async Task<IActionResult> CreaUsuario(CreaUsuarioDto dto)
+        public async Task<IActionResult> CreaUsuario(CrearUsuarioDto usuario)
         {
-            UsuarioEntity entity = await _context.AddUsuario(dto);
-
-            return new CreatedResult($"http://localhost:5181/api/usuario/{entity.IdUsuario}", null);
+            UsuarioEntity result = await _DBventabakcontext.AddUsuario(usuario);
+            return Created($"http://localhost:5181/api/usuario/{result.idUsuario}", null);
         }
 
-        // DELETE: api/usuario/5
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         public async Task<IActionResult> EliminaUsuario(int id)
         {
-            bool result = await _context.DeleteUsuario(id);
-            return new OkObjectResult(result);
+            var result = await _DBventabakcontext.Delete(id);
+            return Ok(result);
         }
 
-        // PUT: api/usuario
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UsuarioDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ActualizaUsuario(UsuarioDto usuario)
         {
-            UsuarioDto? result = await _actualizaUsuarioCasoDeUso.Execute(usuario);
+            var result = await _actualizaUsuarioCasoDeUso.Execute(usuario);
 
             if (result == null)
-                return new NotFoundResult();
+                return NotFound();
 
-            return new OkObjectResult(result);
+            return Ok(result);
         }
     }
 }
+
 
