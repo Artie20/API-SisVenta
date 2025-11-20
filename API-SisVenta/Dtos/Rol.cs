@@ -1,17 +1,20 @@
-﻿namespace API_SisVenta.Dtos
+namespace API_SisVenta.Dtos
 {
     public class RolDto
     {
-        public int IdRol { get; set; }
-        public string? Descripcion { get; set; }
-        public bool? EsActivo { get; set; }
+        public int idRol { get; set; }
+        public string? descripcion { get; set; }
+        public bool? esActivo { get; set; }
+        public DateTime fechaRegistro { get; set; }
+
     }
 
     public class CreaRolDto
     {
-        public string? Descripcion { get; set; }
-        public bool? EsActivo { get; set; }
+        public string? descripcion { get; set; }
+        public bool? esActivo { get; set; }
     }
 
 
 }
+
