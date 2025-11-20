@@ -1,4 +1,4 @@
-﻿using API_SisVenta.Dtos;
+using API_SisVenta.Dtos;
 using API_SisVenta.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,7 +45,7 @@ namespace API_SisVenta.Controllers
         public async Task<IActionResult> CreaRol(CreaRolDto dto)
         {
             var entity = await _context.AddRol(dto);
-            return new CreatedResult($"http://localhost:5181/api/rol/{entity.IdRol}", null);
+            return new CreatedResult($"http://localhost:5181/api/rol/{entity.idRol}", null);
         }
 
         [HttpPut]
@@ -65,4 +65,5 @@ namespace API_SisVenta.Controllers
         }
     }
 }
+
 
