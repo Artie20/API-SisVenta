@@ -19,6 +19,7 @@ builder.Services.AddDbContext<DBVENTAbakContext>(options =>
 builder.Services.AddScoped<IActualizaCasoDeUso, ActualizaCasoDeUso>();
 builder.Services.AddScoped<IActualizaUsuarioCasoDeUso, ActualizaUsuarioCasoDeUso>();
 builder.Services.AddScoped<IActualizaNegocioCasoDeUso, ActualizaNegocioCasoDeUso>();
+builder.Services.AddScoped<IActualizaCategoriaCasoDeUso, ActualizaCategoriaCasoDeUso>();
 /*builder.Services.AddScoped<IActualizaRolCasoDeUso, ActualizaRolCasoDeUso>();*/
 
 var app = builder.Build();
@@ -34,4 +35,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
