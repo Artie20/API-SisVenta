@@ -1,5 +1,6 @@
-using API_SisVenta.Repositories;
 using API_Cliente.CasosDeUso;
+using API_SisVenta.CasosDeUso;
+using API_SisVenta.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<DBVENTAbakContext>(options =>
 // Casos de uso
 builder.Services.AddScoped<IActualizaCasoDeUso, ActualizaCasoDeUso>();
 builder.Services.AddScoped<IActualizaUsuarioCasoDeUso, ActualizaUsuarioCasoDeUso>();
+builder.Services.AddScoped<IActualizaNegocioCasoDeUso, ActualizaNegocioCasoDeUso>();
 /*builder.Services.AddScoped<IActualizaRolCasoDeUso, ActualizaRolCasoDeUso>();*/
 
 var app = builder.Build();
