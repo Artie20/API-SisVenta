@@ -1,6 +1,8 @@
 using API_SisVenta.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace API_SisVenta.Repositories
@@ -12,6 +14,10 @@ namespace API_SisVenta.Repositories
         public DbSet<UsuarioEntity> Usuario { get; set; }
         public DbSet<RolEntity> Rol { get; set; }
         public DbSet<NegocioEntity> Negocio { get; set; }
+        public DbSet<CategoriaEntity> Categoria { get; set; }
+        public DbSet<VentaEntity> Venta { get; set; }
+
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,8 +39,34 @@ namespace API_SisVenta.Repositories
             modelBuilder.Entity<NegocioEntity>()
                 .HasKey(n => n.idNegocio);
 
+            modelBuilder.Entity<VentaEntity>()
+                .HasKey(v => v.IdVenta);
 
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<CategoriaEntity>(entity =>
+            {
+                entity.ToTable("Categoria");
+
+                entity.HasKey(e => e.idCategoria);
+
+                entity.Property(e => e.idCategoria)
+                      .HasColumnName("idCategoria")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.descripcion)
+                      .HasColumnName("descripcion")
+                      .HasMaxLength(50);
+
+                entity.Property(e => e.esActivo)
+                      .HasColumnName("esActivo");
+
+                entity.Property(e => e.fechaRegistro)
+                      .HasColumnName("fechaRegistro")
+                      .HasColumnType("datetime");
+            });
+
+                
         }
 
         // Métodos Cliente
@@ -271,5 +303,41 @@ namespace API_SisVenta.Repositories
             };
         }
     }
+
+    public class CategoriaEntity
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int idCategoria { get; set; }
+        public string? descripcion { get; set; }
+        public bool? esActivo { get; set; }
+        public DateTime? fechaRegistro { get; set; }
+
+        public CategoriaDto ToDto()
+        {
+            return new CategoriaDto
+            {
+                idCategoria = idCategoria,
+                descripcion = descripcion,
+                esActivo = esActivo,
+                fechaRegistro = fechaRegistro
+            };
+        }
+    }
+
+    public class VentaEntity
+    {
+        public int IdVenta { get; set; }
+        public string NumeroVenta { get; set; }
+        public int? IdTipoDocumentoVenta { get; set; }
+        public int? IdUsuario { get; set; }
+        public decimal? SubTotal { get; set; }
+        public decimal? ImpuestoTotal { get; set; }
+        public decimal? Total { get; set; }
+        public DateTime? FechaRegistro { get; set; }
+        public int? IdCliente { get; set; }
+        public decimal? Descuento { get; set; }
+    }
+
 
 }
