@@ -8,10 +8,10 @@ namespace API_SisVenta.Repositories
     public class DBVENTAbakContext : DbContext
     {
         public DBVENTAbakContext(DbContextOptions<DBVENTAbakContext> options) : base(options) { }
-
         public DbSet<ClienteEntity> Cliente { get; set; }
         public DbSet<UsuarioEntity> Usuario { get; set; }
         public DbSet<RolEntity> Rol { get; set; }
+        public DbSet<NegocioEntity> Negocio { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,6 +29,10 @@ namespace API_SisVenta.Repositories
                 .HasOne(u => u.Rol)
                 .WithMany(r => r.Usuarios)
                 .HasForeignKey(u => u.idRol);
+
+            modelBuilder.Entity<NegocioEntity>()
+                .HasKey(n => n.idNegocio);
+
 
             base.OnModelCreating(modelBuilder);
         }
@@ -101,7 +105,6 @@ namespace API_SisVenta.Repositories
             return true;
         }
 
-        //Metodos Rol
         // MÉTODOS ROL ----------------------------------------
 
         public async Task<RolEntity?> GetRol(int id) =>
@@ -150,6 +153,17 @@ namespace API_SisVenta.Repositories
 
             return true;
         }
+
+        public async Task<NegocioEntity?> GetNegocio(int id) =>
+        await Negocio.FirstOrDefaultAsync(x => x.idNegocio == id);
+
+        public async Task<bool> ActualizarNegocio(NegocioEntity entity)
+        {
+            Negocio.Update(entity);
+            await SaveChangesAsync();
+            return true;
+        }
+
 
     }
 
@@ -223,6 +237,37 @@ namespace API_SisVenta.Repositories
                 correo = this.correo,
                 telefono = this.telefono,
                 idRol = this.idRol
+            };
+        }
+    }
+
+    public class NegocioEntity
+    {
+        public int idNegocio { get; set; }
+        public string urlLogo { get; set; }
+        public string nombreLogo { get; set; }
+        public string numeroDocumento { get; set; }
+        public string nombre { get; set; }
+        public string correo { get; set; }
+        public string direccion { get; set; }
+        public string telefono { get; set; }
+        public decimal porcentajeImpuesto { get; set; }
+        public string simboloMoneda { get; set; }
+
+        public NegocioDto ToDto()
+        {
+            return new NegocioDto
+            {
+                idNegocio = idNegocio,
+                urlLogo = urlLogo,
+                nombreLogo = nombreLogo,
+                numeroDocumento = numeroDocumento,
+                nombre = nombre,
+                correo = correo,
+                direccion = direccion,
+                telefono = telefono,
+                porcentajeImpuesto = porcentajeImpuesto,
+                simboloMoneda = simboloMoneda
             };
         }
     }
