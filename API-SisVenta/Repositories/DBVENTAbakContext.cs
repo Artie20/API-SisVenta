@@ -17,11 +17,14 @@ namespace API_SisVenta.Repositories
         public DbSet<CategoriaEntity> Categoria { get; set; }
         public DbSet<VentaEntity> Venta { get; set; }
 
-        // DbSet para ClaveProdServ_SAT (si ya lo tienes)
+        // DbSet para ClaveProdServ_SAT
         public DbSet<ClaveProdServEntity> ClaveProdServSAT { get; set; }
 
         // DbSet para Impuesto_SAT
         public DbSet<ImpuestoEntity> ImpuestoSAT { get; set; }
+
+        // DbSet para ObjetivoImp_SAT
+        public DbSet<ObjetivoImpEntity> ObjetivoImpSAT { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -117,6 +120,29 @@ namespace API_SisVenta.Repositories
                       .HasColumnType("datetime");
             });
 
+            // Mapeo para ObjetivoImp_SAT
+            modelBuilder.Entity<ObjetivoImpEntity>(entity =>
+            {
+                entity.ToTable("ObjetivoImp_SAT");
+
+                entity.HasKey(e => e.idObjetivoImp);
+
+                entity.Property(e => e.idObjetivoImp)
+                      .HasColumnName("idObjetivoImp")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.c_ObjetivoImp_SAT)
+                      .HasColumnName("c_ObjetivoImp_SAT")
+                      .HasMaxLength(30);
+
+                entity.Property(e => e.descripcion)
+                      .HasColumnName("descripcion")
+                      .HasMaxLength(50);
+
+                entity.Property(e => e.fechaRegistro)
+                      .HasColumnName("fechaRegistro")
+                      .HasColumnType("datetime");
+            });
         }
 
         // Métodos Cliente
@@ -305,6 +331,36 @@ namespace API_SisVenta.Repositories
             await SaveChangesAsync();
             return true;
         }
+
+        // MÉTODOS ObjetivoImp_SAT ----------------------------------------
+        public async Task<ObjetivoImpEntity?> GetObjetivoImp(int id) =>
+            await ObjetivoImpSAT.FirstOrDefaultAsync(x => x.idObjetivoImp == id);
+
+        public async Task<ObjetivoImpEntity> AddObjetivoImp(ObjetivoImpEntity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            await ObjetivoImpSAT.AddAsync(entity);
+            await SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<bool> ActualizarObjetivoImp(ObjetivoImpEntity entity)
+        {
+            ObjetivoImpSAT.Update(entity);
+            await SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteObjetivoImp(int id)
+        {
+            var entity = await GetObjetivoImp(id);
+            if (entity == null) return false;
+
+            ObjetivoImpSAT.Remove(entity);
+            await SaveChangesAsync();
+            return true;
+        }
     }
 
     // ENTIDADES ----------------------------------------
@@ -471,6 +527,20 @@ namespace API_SisVenta.Repositories
         public int idImpuesto { get; set; }
 
         public string? c_Impuesto_SAT { get; set; }
+
+        public string? descripcion { get; set; }
+
+        public DateTime? fechaRegistro { get; set; }
+    }
+
+    // Nueva entidad para ObjetivoImp_SAT
+    public class ObjetivoImpEntity
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int idObjetivoImp { get; set; }
+
+        public string? c_ObjetivoImp_SAT { get; set; }
 
         public string? descripcion { get; set; }
 
