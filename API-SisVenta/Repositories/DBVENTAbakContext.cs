@@ -17,8 +17,11 @@ namespace API_SisVenta.Repositories
         public DbSet<CategoriaEntity> Categoria { get; set; }
         public DbSet<VentaEntity> Venta { get; set; }
 
+        // DbSet para ClaveProdServ_SAT (si ya lo tienes)
+        public DbSet<ClaveProdServEntity> ClaveProdServSAT { get; set; }
 
-
+        // DbSet para Impuesto_SAT
+        public DbSet<ImpuestoEntity> ImpuestoSAT { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,7 +69,54 @@ namespace API_SisVenta.Repositories
                       .HasColumnType("datetime");
             });
 
-                
+            // Mapeo para ClaveProdServ_SAT
+            modelBuilder.Entity<ClaveProdServEntity>(entity =>
+            {
+                entity.ToTable("ClaveProdServ_SAT");
+
+                entity.HasKey(e => e.idClaveProdServ_SAT);
+
+                entity.Property(e => e.idClaveProdServ_SAT)
+                      .HasColumnName("idClaveProdServ_SAT")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.c_ClaveProdServ_SAT)
+                      .HasColumnName("c_ClaveProdServ_SAT")
+                      .HasMaxLength(30);
+
+                entity.Property(e => e.descripcion)
+                      .HasColumnName("descripcion")
+                      .HasMaxLength(50);
+
+                entity.Property(e => e.fechaRegistro)
+                      .HasColumnName("fechaRegistro")
+                      .HasColumnType("datetime");
+            });
+
+            // Mapeo para Impuesto_SAT
+            modelBuilder.Entity<ImpuestoEntity>(entity =>
+            {
+                entity.ToTable("Impuesto_SAT");
+
+                entity.HasKey(e => e.idImpuesto);
+
+                entity.Property(e => e.idImpuesto)
+                      .HasColumnName("idImpuesto")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.c_Impuesto_SAT)
+                      .HasColumnName("c_Impuesto_SAT")
+                      .HasMaxLength(30);
+
+                entity.Property(e => e.descripcion)
+                      .HasColumnName("descripcion")
+                      .HasMaxLength(50);
+
+                entity.Property(e => e.fechaRegistro)
+                      .HasColumnName("fechaRegistro")
+                      .HasColumnType("datetime");
+            });
+
         }
 
         // Métodos Cliente
@@ -196,7 +246,65 @@ namespace API_SisVenta.Repositories
             return true;
         }
 
+        // MÉTODOS ClaveProdServ_SAT ----------------------------------------
+        public async Task<ClaveProdServEntity?> GetClaveProdServ(int id) =>
+            await ClaveProdServSAT.FirstOrDefaultAsync(x => x.idClaveProdServ_SAT == id);
 
+        public async Task<ClaveProdServEntity> AddClaveProdServ(ClaveProdServEntity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            await ClaveProdServSAT.AddAsync(entity);
+            await SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<bool> ActualizarClaveProdServ(ClaveProdServEntity entity)
+        {
+            ClaveProdServSAT.Update(entity);
+            await SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteClaveProdServ(int id)
+        {
+            var entity = await GetClaveProdServ(id);
+            if (entity == null) return false;
+
+            ClaveProdServSAT.Remove(entity);
+            await SaveChangesAsync();
+            return true;
+        }
+
+        // MÉTODOS Impuesto_SAT ----------------------------------------
+        public async Task<ImpuestoEntity?> GetImpuesto(int id) =>
+            await ImpuestoSAT.FirstOrDefaultAsync(x => x.idImpuesto == id);
+
+        public async Task<ImpuestoEntity> AddImpuesto(ImpuestoEntity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            await ImpuestoSAT.AddAsync(entity);
+            await SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<bool> ActualizarImpuesto(ImpuestoEntity entity)
+        {
+            ImpuestoSAT.Update(entity);
+            await SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteImpuesto(int id)
+        {
+            var entity = await GetImpuesto(id);
+            if (entity == null) return false;
+
+            ImpuestoSAT.Remove(entity);
+            await SaveChangesAsync();
+            return true;
+        }
     }
 
     // ENTIDADES ----------------------------------------
@@ -339,5 +447,34 @@ namespace API_SisVenta.Repositories
         public decimal? Descuento { get; set; }
     }
 
+    // Nueva entidad para ClaveProdServ_SAT
+    public class ClaveProdServEntity
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int idClaveProdServ_SAT { get; set; }
+
+        // Longitud 30 según la especificación
+        public string? c_ClaveProdServ_SAT { get; set; }
+
+        // Descripción varchar(50)
+        public string? descripcion { get; set; }
+
+        public DateTime? fechaRegistro { get; set; }
+    }
+
+    // Nueva entidad para Impuesto_SAT
+    public class ImpuestoEntity
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int idImpuesto { get; set; }
+
+        public string? c_Impuesto_SAT { get; set; }
+
+        public string? descripcion { get; set; }
+
+        public DateTime? fechaRegistro { get; set; }
+    }
 
 }
