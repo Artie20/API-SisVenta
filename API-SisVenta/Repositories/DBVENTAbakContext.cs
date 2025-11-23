@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using API_SisVenta.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -25,6 +28,9 @@ namespace API_SisVenta.Repositories
 
         // DbSet para ObjetivoImp_SAT
         public DbSet<ObjetivoImpEntity> ObjetivoImpSAT { get; set; }
+
+        // DbSet para RegimenFiscal_SAT
+        public DbSet<RegimenFiscalEntity> RegimenFiscalSAT { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -138,6 +144,30 @@ namespace API_SisVenta.Repositories
                 entity.Property(e => e.descripcion)
                       .HasColumnName("descripcion")
                       .HasMaxLength(50);
+
+                entity.Property(e => e.fechaRegistro)
+                      .HasColumnName("fechaRegistro")
+                      .HasColumnType("datetime");
+            });
+
+            // Mapeo para RegimenFiscal_SAT
+            modelBuilder.Entity<RegimenFiscalEntity>(entity =>
+            {
+                entity.ToTable("RegimenFiscal_SAT");
+
+                entity.HasKey(e => e.idRegimenFiscal);
+
+                entity.Property(e => e.idRegimenFiscal)
+                      .HasColumnName("idRegimenFiscal")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.c_RegimenFiscal)
+                      .HasColumnName("c_RegimenFiscal")
+                      .HasMaxLength(30);
+
+                entity.Property(e => e.descripcion)
+                      .HasColumnName("descripcion")
+                      .HasMaxLength(150);
 
                 entity.Property(e => e.fechaRegistro)
                       .HasColumnName("fechaRegistro")
@@ -361,6 +391,36 @@ namespace API_SisVenta.Repositories
             await SaveChangesAsync();
             return true;
         }
+
+        // MÉTODOS RegimenFiscal_SAT ----------------------------------------
+        public async Task<RegimenFiscalEntity?> GetRegimenFiscal(int id) =>
+            await RegimenFiscalSAT.FirstOrDefaultAsync(x => x.idRegimenFiscal == id);
+
+        public async Task<RegimenFiscalEntity> AddRegimenFiscal(RegimenFiscalEntity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            await RegimenFiscalSAT.AddAsync(entity);
+            await SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<bool> ActualizarRegimenFiscal(RegimenFiscalEntity entity)
+        {
+            RegimenFiscalSAT.Update(entity);
+            await SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteRegimenFiscal(int id)
+        {
+            var entity = await GetRegimenFiscal(id);
+            if (entity == null) return false;
+
+            RegimenFiscalSAT.Remove(entity);
+            await SaveChangesAsync();
+            return true;
+        }
     }
 
     // ENTIDADES ----------------------------------------
@@ -541,6 +601,20 @@ namespace API_SisVenta.Repositories
         public int idObjetivoImp { get; set; }
 
         public string? c_ObjetivoImp_SAT { get; set; }
+
+        public string? descripcion { get; set; }
+
+        public DateTime? fechaRegistro { get; set; }
+    }
+
+    // Nueva entidad para RegimenFiscal_SAT
+    public class RegimenFiscalEntity
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int idRegimenFiscal { get; set; }
+
+        public string? c_RegimenFiscal { get; set; }
 
         public string? descripcion { get; set; }
 
